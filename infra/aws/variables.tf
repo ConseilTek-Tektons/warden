@@ -70,8 +70,8 @@ variable "openai_api_key_secret_arn" {
   default     = ""
 }
 
-variable "openai_warden_store_id" {
-  description = "Optional OpenAI warden store used by file_search."
+variable "openai_vector_store_id" {
+  description = "Optional OpenAI vector store used by file_search."
   type        = string
   default     = ""
 }
