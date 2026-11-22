@@ -1,0 +1,5 @@
+export const knowledgeArticles = [
+  {id:"review-context",title:"Certification reviewer context",summary:"Each decision shows last use, peer coverage, risk, prior decision, account status, and entitlement ownership.",content:"The context is frozen with the campaign scope. Recommendations remain advisory and every reviewer decision is recorded in the append-only ledger.",tags:["campaign","review","peer","risk"]},
+  {id:"sod",title:"Segregation-of-duties policy",summary:"Preventive checks run at request time and detective scans run after each source aggregation.",content:"Policy rules are versioned predicates with named owners, severity, compensating controls, test cases, and effective dates.",tags:["sod","policy","violation","access"]},
+  {id:"revocation",title:"Verified revocation",summary:"A revoke decision is incomplete until the source connector returns a receipt and a later aggregation confirms removal.",content:"Failures remain visible with retry history. Evidence packs retain the decision, actor, connector response, verification, and hash-chain position.",tags:["revocation","receipt","evidence","connector"]},
+];

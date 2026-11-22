@@ -1,0 +1,11 @@
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { authOptions } from "@/auth";
+import { database } from "@/lib/db";
+import { hasEffectivePermission } from "@/lib/rbac-server";
+export const runtime="nodejs";
+const organisationId=process.env.WORKSPACE_ID??"00000000-0000-4000-8000-000000000001";
+const schema=z.object({name:z.string().trim().min(3).max(160),scope:z.record(z.string(),z.json()).default({}),dueAt:z.string().datetime().nullable().default(null)});
+export async function GET(){const session=await getServerSession(authOptions);if(!session?.user)return NextResponse.json({error:"Authentication required."},{status:401});if(!await hasEffectivePermission(session.user.roles,"dashboard.view"))return NextResponse.json({error:"Forbidden."},{status:403});if(!process.env.DATABASE_URL&&!process.env.PGHOST)return NextResponse.json({data:[],mode:"demo-ui"});const rows=await database()`select c.id,c.name,c.state,c.due_at,count(ci.id)::int as review_items,count(ci.decided_at)::int as decided from campaign c left join certification_item ci on ci.campaign_id=c.id where c.organisation_id=${organisationId} group by c.id order by c.created_at desc`;return NextResponse.json({data:rows,mode:"postgres"});}
+export async function POST(request:Request){const session=await getServerSession(authOptions);if(!session?.user)return NextResponse.json({error:"Authentication required."},{status:401});if(!await hasEffectivePermission(session.user.roles,"campaigns.manage"))return NextResponse.json({error:"Forbidden."},{status:403});if(!process.env.DATABASE_URL&&!process.env.PGHOST)return NextResponse.json({error:"PostgreSQL is required."},{status:503});const parsed=schema.safeParse(await request.json().catch(()=>null));if(!parsed.success)return NextResponse.json({error:"Invalid campaign.",details:parsed.error.flatten()},{status:400});const [campaign]=await database()`insert into campaign(organisation_id,name,scope,due_at) values(${organisationId},${parsed.data.name},${database().json(parsed.data.scope)},${parsed.data.dueAt}) returning *`;await database()`insert into audit_event(organisation_id,actor_id,action,entity_type,entity_id) values(${organisationId},${session.user.id},'campaign.created','campaign',${campaign.id})`;return NextResponse.json({data:campaign},{status:201});}

@@ -1,0 +1,32 @@
+{
+  "realm": "warden",
+  "enabled": true,
+  "displayName": "Warden local identity broker",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "clients": [
+    {
+      "clientId": "warden-web",
+      "name": "Warden Web",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "local-dev-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:3000/api/auth/callback/enterprise-sso"],
+      "webOrigins": ["http://localhost:3000"],
+      "protocol": "openid-connect",
+      "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "email", "groups"]
+    }
+  ],
+  "groups": [
+    { "name": "warden-owners" },
+    { "name": "warden-admins" },
+    { "name": "campaign-owners" },
+    { "name": "access-reviewers" },
+    { "name": "application-owners" },
+    { "name": "iga-policy" },
+    { "name": "internal-audit" },
+    { "name": "employees" }
+  ]
+}

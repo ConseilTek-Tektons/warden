@@ -1,0 +1,1 @@
+export function certificationRisk(input:{privileged:boolean;daysSinceUse:number|null;peerCoverage:number}) { let score=input.privileged?45:0; score+=input.daysSinceUse===null?20:Math.min(25,Math.floor(input.daysSinceUse/30)*5); score+=Math.round((1-input.peerCoverage)*30); return Math.min(100,Math.max(0,score)); }
